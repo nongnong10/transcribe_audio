@@ -5,18 +5,19 @@ import (
 	"fmt"
 	aai "github.com/AssemblyAI/assemblyai-go-sdk"
 	"os"
+	"transcribe_and_detect_speech/config"
 )
 
 type TranscribeFilter struct{}
 
 func (filter TranscribeFilter) transcribe(in []byte) []byte {
-	client := aai.NewClient("cfa7d3a989a0494d89722f36fc4f4400")
+	cfg := config.Load()
+	client := aai.NewClient(cfg.APIKey)
 
 	params := &aai.TranscriptOptionalParams{
 		SpeakerLabels: aai.Bool(true),
 	}
 
-	// You can use a local file:
 	fmt.Printf("TranscribeFilter - transcribe input: %v \n", string(in))
 	f, err := os.Open(string(in))
 
