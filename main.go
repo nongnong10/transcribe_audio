@@ -1,11 +1,15 @@
 package main
 
 import (
+	"transcribe_and_detect_speech/config"
 	"transcribe_and_detect_speech/dto"
 	"transcribe_and_detect_speech/filters"
 )
 
 func main() {
+	// Load config
+	cfg := config.Load()
+
 	// Create Filters
 	extractAudioFilter := filters.ExtractAudioFilter{}
 	transcribeFilter := filters.TranscribeFilter{}
@@ -16,8 +20,7 @@ func main() {
 	pipeline.Add(transcribeFilter)
 
 	// Create request
-	filePath := "/home/huy/pipe/transcribe_and_detect_speech/assets/video/video.mp4"
-	in := []byte(filePath)
+	in := []byte(cfg.Files.VideoFile)
 	out := pipeline.Process(in)
 
 	println(out)
