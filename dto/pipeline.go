@@ -1,33 +1,34 @@
 package dto
 
-// Pipeline keeps references to the start and end of pipeline
-type Pipeline struct {
-	head chan []byte
-	tail chan []byte
+// Pipeline struct supporting different input and output types for each step
+type Pipeline[In any, Out any] struct {
+	head chan In
+	tail chan Out
 }
 
-// NewPipeline
-func NewPipeline() *Pipeline {
-	return &Pipeline{}
+// NewPipeline creates a new pipeline instance
+func NewPipeline[In any, Out any]() *Pipeline[In, Out] {
+	return &Pipeline[In, Out]{}
 }
 
-// Add adds a new pipeline step
-func (p *Pipeline) Add(filter Filter) {
+// Add adds a new pipeline step that transforms input from one type to another
+func (p *Pipeline[In, Out]) Add(filter Filter[In, Out]) {
 	// Case 1: Pipeline is empty
 	if p.tail == nil {
-		p.head = make(chan []byte)
+		p.head = make(chan In)
 		p.tail = filter.Process(p.head)
 	} else {
 		// Case 2: Pipeline is not empty, continue to add and process
-		p.tail = filter.Process(p.tail)
+		// Update the pipeline by adding a new filter step
+		p.tail = filter.Process(any(p.tail).(chan In))
 	}
 }
 
-// Process executes the pipeline
-func (p *Pipeline) Process(in []byte) (out []byte) {
+// Process executes the pipeline and transforms the input through all steps
+func (p *Pipeline[In, Out]) Process(in In) Out {
 	// Case 1: Pipeline is empty
 	if p.head == nil {
-		return in
+		return any(in).(Out) // Trả về đầu vào nếu không có bước nào trong pipeline
 	}
 	p.head <- in
 	close(p.head)

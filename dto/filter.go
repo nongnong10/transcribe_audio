@@ -1,5 +1,6 @@
 package dto
 
-type Filter interface {
-	Process(in chan []byte) chan []byte
+// Filter interface using generics for input and output types
+type Filter[In any, Out any] interface {
+	Process(in chan In) chan Out
 }

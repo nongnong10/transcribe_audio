@@ -28,3 +28,19 @@ func TestTranscribeFilterProcess(t *testing.T) {
 	got := <-transcribeFilter.Process(in)
 	println(got)
 }
+
+func TestExtractAudioFilterProcess(t *testing.T) {
+	// Create Filters
+	extractAudioFilter := filters.ExtractAudioFilter{}
+
+	// File path
+	filePath := "/home/huy/pipe/transcribe_and_detect_speech/assets/video/video.mp4"
+
+	in := make(chan []byte)
+	go func() {
+		in <- []byte(filePath)
+		close(in)
+	}()
+	got := <-extractAudioFilter.Process(in)
+	println(got)
+}

@@ -11,7 +11,7 @@ func TestPipelineWithMultiFilter(t *testing.T) {
 	transcribeFilter := filters.TranscribeFilter{}
 
 	// Create Pipeline
-	pipeline := dto.NewPipeline()
+	pipeline := dto.NewPipeline[[]byte, []byte]()
 	pipeline.Add(transcribeFilter)
 
 	in := []byte("Hello World")
