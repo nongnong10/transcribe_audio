@@ -3,6 +3,7 @@ package filters
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 	"transcribe_and_detect_speech/config"
 )
@@ -12,6 +13,8 @@ type FileFilter struct{}
 func (filter FileFilter) dump_to_file(in []byte) []byte {
 	cfg := config.Load()
 	fileName := cfg.Files.TextFiles[0]
+	basePath, _ := filepath.Abs("./assets/text/")
+	fileName = filepath.Join(basePath, fileName)
 
 	// Create the file
 	file, err := os.Create(fileName)

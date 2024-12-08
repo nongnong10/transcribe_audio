@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 )
@@ -22,7 +23,7 @@ type Files struct {
 }
 
 const (
-	LocalProjectPath = "/home/huy/pipe/transcribe_and_detect_speech"
+	LocalProjectPath = "../transcribe_audio"
 	ConstConfig      = "config"
 	Yml              = "yml"
 	RootPath         = "."
@@ -30,7 +31,11 @@ const (
 )
 
 func Load() Config {
-	os.Chdir(LocalProjectPath)
+	basePath, err := filepath.Abs(LocalProjectPath)
+	if err != nil {
+		panic(err)
+	}
+	os.Chdir(basePath)
 
 	// Load config from config.yml
 	// With common function in carbon/common
@@ -43,7 +48,7 @@ func Load() Config {
 	vip.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	vip.AutomaticEnv()
 
-	err := vip.ReadInConfig()
+	err = vip.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}

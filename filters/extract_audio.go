@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"sync"
 	"transcribe_and_detect_speech/config"
 )
@@ -12,9 +13,13 @@ type ExtractAudioFilter struct{}
 
 func (filter ExtractAudioFilter) extractAudio(in []byte) []byte {
 	videoFilePath := string(in)
+	basePath, _ := filepath.Abs("./assets/video/")
+	videoFilePath = filepath.Join(basePath, videoFilePath)
 
 	cfg := config.Load()
 	audioFilePath := cfg.Files.AudioFiles[0]
+	basePath, _ = filepath.Abs("./assets/audio/")
+	audioFilePath = filepath.Join(basePath, audioFilePath)
 
 	// Remove file if exists
 	if _, err := os.Stat(audioFilePath); err == nil {
