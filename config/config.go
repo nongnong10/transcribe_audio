@@ -16,8 +16,9 @@ type Config struct {
 }
 
 type Files struct {
-	AudioFile string `mapstructure:"audio_file"`
-	VideoFile string `mapstructure:"video_file"`
+	AudioFiles []string `mapstructure:"audio_files"`
+	VideoFiles []string `mapstructure:"video_files"`
+	TextFiles  []string `mapstructure:"text_files"`
 }
 
 const (

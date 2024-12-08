@@ -1,0 +1,8 @@
+api_key: "123"
+files:
+  audio_files:
+    - "/home/huy/pipe/transcribe_and_detect_speech/assets/audio/audio.mp3"
+  video_files:
+    - "/home/huy/pipe/transcribe_and_detect_speech/assets/video/video.mp4"
+  text_files:
+    - "/home/huy/pipe/transcribe_and_detect_speech/assets/text/text1.txt"

@@ -13,14 +13,16 @@ func main() {
 	// Create Filters
 	extractAudioFilter := filters.ExtractAudioFilter{}
 	transcribeFilter := filters.TranscribeFilter{}
+	fileFilter := filters.FileFilter{}
 
 	// Create Pipeline
 	pipeline := dto.NewPipeline[[]byte, []byte]()
-	pipeline.Add(extractAudioFilter)
-	pipeline.Add(transcribeFilter)
+	pipeline.Add(extractAudioFilter, 1)
+	pipeline.Add(transcribeFilter, 1)
+	pipeline.Add(fileFilter, 1)
 
 	// Create request
-	in := []byte(cfg.Files.VideoFile)
+	in := []byte(cfg.Files.VideoFiles[0])
 	out := pipeline.Process(in)
 
 	println(out)

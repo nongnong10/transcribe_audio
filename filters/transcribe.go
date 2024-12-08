@@ -5,6 +5,7 @@ import (
 	"fmt"
 	aai "github.com/AssemblyAI/assemblyai-go-sdk"
 	"os"
+	"sync"
 	"transcribe_and_detect_speech/config"
 )
 
@@ -37,14 +38,22 @@ func (filter TranscribeFilter) transcribe(in []byte) []byte {
 }
 
 // Process simply returns the input
-func (filter TranscribeFilter) Process(in chan []byte) chan []byte {
+func (filter TranscribeFilter) Process(in chan []byte, numWorkers int) chan []byte {
 	out := make(chan []byte)
+	var wg sync.WaitGroup
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for val := range in {
+				tmp := filter.transcribe(val)
+				fmt.Printf("Goroutine %d - TranscribeFilter - Process output: %v \n", workerID, string(tmp))
+				out <- tmp
+			}
+		}(i)
+	}
 	go func() {
-		for val := range in {
-			tmp := filter.transcribe(val)
-			fmt.Printf("TranscribeFilter - Process output: %v \n", string(tmp))
-			out <- tmp
-		}
+		wg.Wait()
 		close(out)
 	}()
 	return out
