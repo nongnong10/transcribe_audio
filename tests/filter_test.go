@@ -25,7 +25,7 @@ func TestTranscribeFilterProcess(t *testing.T) {
 		in <- []byte(filePath)
 		close(in)
 	}()
-	got := <-transcribeFilter.Process(in)
+	got := <-transcribeFilter.Process(in, 3)
 	println(got)
 }
 
@@ -41,6 +41,6 @@ func TestExtractAudioFilterProcess(t *testing.T) {
 		in <- []byte(filePath)
 		close(in)
 	}()
-	got := <-extractAudioFilter.Process(in)
+	got := <-extractAudioFilter.Process(in, 3)
 	println(got)
 }

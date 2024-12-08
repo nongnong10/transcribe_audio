@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sync"
 	"transcribe_and_detect_speech/config"
 )
 
@@ -13,7 +14,7 @@ func (filter ExtractAudioFilter) extractAudio(in []byte) []byte {
 	videoFilePath := string(in)
 
 	cfg := config.Load()
-	audioFilePath := cfg.Files.AudioFile
+	audioFilePath := cfg.Files.AudioFiles[0]
 
 	// Remove file if exists
 	if _, err := os.Stat(audioFilePath); err == nil {
@@ -36,15 +37,25 @@ func (filter ExtractAudioFilter) extractAudio(in []byte) []byte {
 }
 
 // Process simply returns the input
-func (fiter ExtractAudioFilter) Process(in chan []byte) chan []byte {
+func (filter ExtractAudioFilter) Process(in chan []byte, numWorkers int) chan []byte {
 	out := make(chan []byte)
+	var wg sync.WaitGroup
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for val := range in {
+				// Xử lý extract audio
+				tmp := filter.extractAudio(val)
+				fmt.Printf("Goroutine %d - ExtractAudioFilter - Process output: %v \n", workerID, string(tmp))
+				out <- tmp
+			}
+		}(i)
+	}
 	go func() {
-		for val := range in {
-			tmp := fiter.extractAudio(val)
-			fmt.Printf("ExtractAudioFilter - Process output: %v \n", string(tmp))
-			out <- tmp
-		}
+		wg.Wait()
 		close(out)
 	}()
+
 	return out
 }

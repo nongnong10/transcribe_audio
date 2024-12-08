@@ -12,15 +12,15 @@ func NewPipeline[In any, Out any]() *Pipeline[In, Out] {
 }
 
 // Add adds a new pipeline step that transforms input from one type to another
-func (p *Pipeline[In, Out]) Add(filter Filter[In, Out]) {
+func (p *Pipeline[In, Out]) Add(filter Filter[In, Out], numWorkers int) {
 	// Case 1: Pipeline is empty
 	if p.tail == nil {
 		p.head = make(chan In)
-		p.tail = filter.Process(p.head)
+		p.tail = filter.Process(p.head, numWorkers)
 	} else {
 		// Case 2: Pipeline is not empty, continue to add and process
 		// Update the pipeline by adding a new filter step
-		p.tail = filter.Process(any(p.tail).(chan In))
+		p.tail = filter.Process(any(p.tail).(chan In), numWorkers)
 	}
 }
 
